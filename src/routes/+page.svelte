@@ -1,13 +1,20 @@
 <script lang="ts">
+    import { getResponse } from '$lib';
     let input: string = '';
 
-    function handleSubmit() {
-        console.log(input);
+    let promise: Promise<any>;
+
+    async function handleSubmit() {
+        promise = getResponse(input);
     }
 </script>
 
-<main class="flex flex-col items-center">
-    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold my-10">ColorNamer</h1>
+<main class="flex flex-col items-center text-center">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mt-10">ColorNamer</h1>
+    <h2 class="mt-6 text-lg">Welcome to ColorNamer, your go-to tool for identifying color names effortlessly!</h2>
+    <p class="my-10 text-lg md:text-base text-center text-gray-700 max-w-2xl mx-auto">
+        Just enter a HEX or RGB color code and instantly discover its closest name. Ideal for designers, developers, and anyone curious about the colors around them. Start exploring and name that color!
+    </p>
     <form
         class="flex flex-col items-center"
         on:submit|preventDefault={handleSubmit}>
@@ -25,4 +32,17 @@
             Submit
         </button>
     </form>
+
+    {#if promise}
+        {#await promise}
+            <p>Loading...</p>
+        {:then data}
+            <div class="flex flex-col items-center">
+                <h3 class="text-lg font-semibold mt-4">Closest color name:</h3>
+                <p class="text-2xl font-bold mt-2">{data}</p>
+            </div>
+        {:catch error}
+            <p class="text-red-500">Something went wrong: {error.message}</p>
+        {/await}
+    {/if}
 </main>
